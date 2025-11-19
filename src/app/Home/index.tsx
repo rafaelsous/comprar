@@ -1,4 +1,4 @@
-import { Image, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 import { styles } from "./styles";
 
@@ -10,8 +10,14 @@ export function Home() {
     <View style={styles.container}>
       <Image style={styles.logo} source={require("@/assets/logo.png")} />
 
-      <Input placeholder="O que você precisa comprar?" />
-      <Button title="Adicionar" />
+      <View style={styles.form}>
+        <Input placeholder="O que você precisa comprar?" />
+        <Button title="Adicionar" />
+      </View>
+
+      <View style={styles.content}>
+        <Text>Content</Text>
+      </View>
     </View>
   );
 }
