@@ -19,21 +19,31 @@ import { Button } from "@/components/Button";
 import { Filter } from "@/components/Filter";
 import { AlertDialog } from "@/components/AlertDialog";
 
+const DIALOG_INITIAL_VALUES = { open: false, title: "", message: "" };
 const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
 
 type ItemDialogProps = {
-  itemId: string;
-  itemDescription: string;
+  id: string;
+  description: string;
+};
+
+type OpenDialogProps = {
+  open: boolean;
+  title: string;
+  message: string;
 };
 
 export function Home() {
   const [filter, setFilter] = useState(FilterStatus.PENDING);
   const [description, setDescription] = useState("");
   const [items, setItems] = useState<ItemStorage[]>([]);
-  const [openDialog, setOpenDialog] = useState<boolean>(true);
+  const [openDialog, setOpenDialog] = useState<OpenDialogProps>(
+    DIALOG_INITIAL_VALUES
+  );
   const [dialogItem, setDialogItem] = useState<ItemDialogProps | null>(null);
+  const [showButtonAction, setShowButtonAction] = useState<boolean>(true);
 
-  const { getByStatus, add, remove } = itemsStorage;
+  const { getByStatus, add, remove, clear } = itemsStorage;
 
   async function itemsByStatus() {
     try {
@@ -47,7 +57,12 @@ export function Home() {
 
   async function handleAddItem() {
     if (!description.trim()) {
-      return Alert.alert("Adicionar Item", "Informe a descrição do item.");
+      setShowButtonAction(false);
+      return setOpenDialog({
+        open: true,
+        title: "Adicionar Item",
+        message: "Informe a descrição do item.",
+      });
     }
 
     const newItem = {
@@ -61,11 +76,16 @@ export function Home() {
     itemsByStatus();
     setDescription("");
     setFilter(FilterStatus.PENDING);
+    setShowButtonAction(false);
 
-    Alert.alert("Adicionado", `Adicionado ${description}`);
+    setOpenDialog({
+      open: true,
+      title: "Adicionado",
+      message: `Adicionado ${description}.`,
+    });
   }
 
-  async function handleRemoveItem(itemId: string) {
+  async function onRemoveItem(itemId: string) {
     try {
       await remove(itemId);
       itemsByStatus();
@@ -75,9 +95,53 @@ export function Home() {
     }
   }
 
+  async function onClearItems() {
+    try {
+      await clear();
+      setItems([]);
+    } catch (error) {
+      console.log(error);
+      setOpenDialog({
+        open: true,
+        title: "Limpar Itens",
+        message: "Não foi possível remover todos os itens.",
+      });
+    }
+  }
+
   function handleRemoveAlert(itemId: string, itemDescription: string) {
-    setDialogItem({ itemId, itemDescription });
-    setOpenDialog(true);
+    setDialogItem({ id: itemId, description: itemDescription });
+    setShowButtonAction(true);
+    setOpenDialog({
+      open: true,
+      title: "Remover Item",
+      message: "Deseja realmente remover o item",
+    });
+  }
+
+  function handleClearAlert() {
+    setShowButtonAction(true);
+    setOpenDialog({
+      open: true,
+      title: "Limpar Itens",
+      message: "Deseja remover todos os itens?",
+    });
+  }
+
+  function closeDialog() {
+    setOpenDialog(DIALOG_INITIAL_VALUES);
+    setDialogItem(null);
+    setShowButtonAction(false);
+  }
+
+  function handleConfirmAction() {
+    if (dialogItem) {
+      onRemoveItem(dialogItem.id);
+    } else {
+      onClearItems();
+    }
+
+    closeDialog();
   }
 
   useEffect(() => {
@@ -113,7 +177,9 @@ export function Home() {
             activeOpacity={0.7}
             hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
           >
-            <Text style={styles.clearText}>Limpar</Text>
+            <Text style={styles.clearText} onPress={handleClearAlert}>
+              Limpar
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -136,11 +202,12 @@ export function Home() {
         />
       </View>
 
-      {dialogItem ? (
-        <AlertDialog
-          visible={openDialog}
-          title="Remover Item"
-          message={
+      {/* {dialogItem ? ( */}
+      <AlertDialog
+        visible={openDialog.open}
+        title={openDialog.title}
+        message={
+          dialogItem ? (
             <Text
               style={{
                 marginTop: 48,
@@ -151,24 +218,21 @@ export function Home() {
                 lineHeight: 24,
               }}
             >
-              Deseja realmente remover o item{"\n"}
-              <Text style={{ fontWeight: 700 }}>
-                {dialogItem.itemDescription}
-              </Text>
-              ?
+              {openDialog.message}
+              {"\n"}
+              <Text style={{ fontWeight: 700 }}>{dialogItem.description}</Text>?
             </Text>
-          }
-          cancelText="Cancelar"
-          onCancel={() => setOpenDialog(false)}
-          confirmText="Sim, remover"
-          onConfirm={() => {
-            if (dialogItem) {
-              handleRemoveItem(dialogItem.itemId);
-            }
-            setOpenDialog(false);
-          }}
-        />
-      ) : null}
+          ) : (
+            openDialog.message
+          )
+        }
+        cancelText="Cancelar"
+        onCancel={closeDialog}
+        confirmText="Sim, remover"
+        showActionButtons={showButtonAction}
+        onConfirm={handleConfirmAction}
+      />
+      {/* ) : null} */}
     </View>
   );
 }

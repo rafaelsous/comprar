@@ -14,6 +14,7 @@ type Props = {
   message: string | React.ReactNode;
   confirmText?: string;
   cancelText?: string;
+  showActionButtons?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -24,6 +25,7 @@ export function AlertDialog({
   message,
   confirmText = "Confirmar",
   cancelText = "Cancelar",
+  showActionButtons = false,
   onConfirm,
   onCancel,
 }: Readonly<Props>) {
@@ -52,15 +54,23 @@ export function AlertDialog({
             message
           )}
 
-          <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.buttonSecondary} onPress={onCancel}>
-              <Text style={styles.buttonSecondaryText}>{cancelText}</Text>
-            </TouchableOpacity>
+          {showActionButtons && (
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.buttonSecondary}
+                onPress={onCancel}
+              >
+                <Text style={styles.buttonSecondaryText}>{cancelText}</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonPrimary} onPress={onConfirm}>
-              <Text style={styles.buttonPrimaryText}>{confirmText}</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                style={styles.buttonPrimary}
+                onPress={onConfirm}
+              >
+                <Text style={styles.buttonPrimaryText}>{confirmText}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     </Modal>
