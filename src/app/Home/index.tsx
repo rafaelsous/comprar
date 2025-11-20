@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
 import { styles } from "./styles";
@@ -13,12 +14,10 @@ import { Filter } from "@/components/Filter";
 const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
 
 export function Home() {
+  const [filter, setFilter] = useState(FilterStatus.PENDING);
+
   function handleRemoveItem() {
     console.log("Removing item...");
-  }
-
-  function handleToggleItemStatus() {
-    console.log("Toggling item status...");
   }
 
   return (
@@ -33,10 +32,19 @@ export function Home() {
       <View style={styles.content}>
         <View style={styles.header}>
           {FILTER_STATUS.map((status) => (
-            <Filter key={status} status={status} isActive />
+            <Filter
+              key={status}
+              status={status}
+              isActive={status === filter}
+              onPress={() => setFilter(status)}
+            />
           ))}
 
-          <TouchableOpacity style={styles.clearButton} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.clearButton}
+            activeOpacity={0.7}
+            hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+          >
             <Text style={styles.clearText}>Limpar</Text>
           </TouchableOpacity>
         </View>
@@ -48,7 +56,7 @@ export function Home() {
             <Item
               data={item}
               onRemove={handleRemoveItem}
-              onToggleStatus={handleToggleItemStatus}
+              onToggleStatus={() => console.log("Toggling status...")}
             />
           )}
           showsVerticalScrollIndicator={false}

@@ -1,5 +1,5 @@
-import { Text, TouchableOpacity, View } from "react-native";
 import { Trash2 } from "lucide-react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 import { styles } from "./styles";
 
@@ -23,7 +23,7 @@ export function Item({ data, onRemove, onToggleStatus }: Readonly<Props>) {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onToggleStatus}
-        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
       >
         <StatusIcon status={data.status} />
       </TouchableOpacity>
@@ -35,7 +35,7 @@ export function Item({ data, onRemove, onToggleStatus }: Readonly<Props>) {
           size={18}
           color="#828282"
           onPress={onRemove}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
         />
       </TouchableOpacity>
     </View>
