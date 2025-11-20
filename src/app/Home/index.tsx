@@ -15,6 +15,7 @@ const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
 
 export function Home() {
   const [filter, setFilter] = useState(FilterStatus.PENDING);
+  const [description, setDescription] = useState("");
 
   function handleRemoveItem() {
     console.log("Removing item...");
@@ -25,7 +26,11 @@ export function Home() {
       <Image style={styles.logo} source={require("@/assets/logo.png")} />
 
       <View style={styles.form}>
-        <Input placeholder="O que você precisa comprar?" />
+        <Input
+          placeholder="O que você precisa comprar?"
+          onChangeText={setDescription}
+          value={description}
+        />
         <Button title="Adicionar" />
       </View>
 
