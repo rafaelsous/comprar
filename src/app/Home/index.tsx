@@ -52,6 +52,9 @@ export function Home() {
 
     itemsByStatus();
     setDescription("");
+    setFilter(FilterStatus.PENDING);
+
+    Alert.alert("Adicionado", `Adicionado ${description}`);
   }
 
   useEffect(() => {
