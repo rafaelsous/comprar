@@ -25,13 +25,11 @@ export function Home() {
   const [description, setDescription] = useState("");
   const [items, setItems] = useState<ItemStorage[]>([]);
 
-  const { get, add } = itemsStorage;
+  const { getByStatus, add } = itemsStorage;
 
-  async function fetchItems() {
+  async function itemsByStatus() {
     try {
-      console.log("Loading items...");
-
-      const data = await get();
+      const data = await getByStatus(filter);
       setItems(data);
     } catch (error) {
       console.log(error);
@@ -52,13 +50,13 @@ export function Home() {
 
     await add(newItem);
 
-    fetchItems();
+    itemsByStatus();
     setDescription("");
   }
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    itemsByStatus();
+  }, [filter]);
 
   return (
     <View style={styles.container}>
