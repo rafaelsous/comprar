@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { styles } from "./styles";
 
-import { ITEMS } from "@/utils/data";
 import { FilterStatus } from "@/types/FilterStatus";
 
 import { Item } from "@/components/Item";
@@ -16,9 +22,20 @@ const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
 export function Home() {
   const [filter, setFilter] = useState(FilterStatus.PENDING);
   const [description, setDescription] = useState("");
+  const [items, setItems] = useState<any[]>([]);
 
-  function handleRemoveItem() {
-    console.log("Removing item...");
+  function handleAddItem() {
+    if (!description.trim()) {
+      return Alert.alert("Adicionar Item", "Informe a descrição do item.");
+    }
+
+    const newItem = {
+      id: Math.random().toString(36).substring(2),
+      status: FilterStatus.PENDING,
+      description,
+    };
+
+    setItems((prevState) => [...prevState, newItem]);
   }
 
   return (
@@ -31,7 +48,7 @@ export function Home() {
           onChangeText={setDescription}
           value={description}
         />
-        <Button title="Adicionar" />
+        <Button title="Adicionar" onPress={handleAddItem} />
       </View>
 
       <View style={styles.content}>
@@ -55,13 +72,13 @@ export function Home() {
         </View>
 
         <FlatList
-          data={ITEMS}
+          data={items}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Item
               data={item}
-              onRemove={handleRemoveItem}
-              onToggleStatus={() => console.log("Toggling status...")}
+              onRemove={() => console.log("Removing item...")}
+              onToggleStatus={() => console.log("Toggling item status...")}
             />
           )}
           showsVerticalScrollIndicator={false}
