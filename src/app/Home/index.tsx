@@ -43,7 +43,7 @@ export function Home() {
   const [dialogItem, setDialogItem] = useState<ItemDialogProps | null>(null);
   const [showButtonAction, setShowButtonAction] = useState<boolean>(true);
 
-  const { getByStatus, add, remove, clear } = itemsStorage;
+  const { getByStatus, add, remove, clear, toggleStatus } = itemsStorage;
 
   async function itemsByStatus() {
     try {
@@ -51,7 +51,7 @@ export function Home() {
       setItems(data);
     } catch (error) {
       console.log(error);
-      Alert.alert("Erro", "Não foi possível filter os items.");
+      Alert.alert("Erro", "Não foi possível filtrar os itens.");
     }
   }
 
@@ -91,7 +91,11 @@ export function Home() {
       itemsByStatus();
     } catch (error) {
       console.log(error);
-      Alert.alert("Remover Item", "Não foi possível remover o item.");
+      setOpenDialog({
+        open: true,
+        title: "Erro",
+        message: "Não foi possível remover o item.",
+      });
     }
   }
 
@@ -103,8 +107,25 @@ export function Home() {
       console.log(error);
       setOpenDialog({
         open: true,
-        title: "Limpar Itens",
+        title: "Erro",
         message: "Não foi possível remover todos os itens.",
+      });
+    }
+  }
+
+  async function handleToggleItemStatus(
+    itemId: string,
+    itemStatus: FilterStatus
+  ) {
+    try {
+      await toggleStatus(itemId, itemStatus);
+      await itemsByStatus();
+    } catch (error) {
+      console.log(error);
+      setOpenDialog({
+        open: true,
+        title: "Erro",
+        message: "Não foi possível atualizar o status do item.",
       });
     }
   }
@@ -190,7 +211,9 @@ export function Home() {
             <Item
               data={item}
               onRemove={() => handleRemoveAlert(item.id, item.description)}
-              onToggleStatus={() => console.log("Toggling item status...")}
+              onToggleStatus={() =>
+                handleToggleItemStatus(item.id, item.status)
+              }
             />
           )}
           showsVerticalScrollIndicator={false}
@@ -202,7 +225,6 @@ export function Home() {
         />
       </View>
 
-      {/* {dialogItem ? ( */}
       <AlertDialog
         visible={openDialog.open}
         title={openDialog.title}
@@ -232,7 +254,6 @@ export function Home() {
         showActionButtons={showButtonAction}
         onConfirm={handleConfirmAction}
       />
-      {/* ) : null} */}
     </View>
   );
 }
