@@ -25,7 +25,7 @@ export function Home() {
   const [description, setDescription] = useState("");
   const [items, setItems] = useState<ItemStorage[]>([]);
 
-  const { get } = itemsStorage;
+  const { get, add } = itemsStorage;
 
   async function fetchItems() {
     try {
@@ -39,7 +39,7 @@ export function Home() {
     }
   }
 
-  function handleAddItem() {
+  async function handleAddItem() {
     if (!description.trim()) {
       return Alert.alert("Adicionar Item", "Informe a descrição do item.");
     }
@@ -50,7 +50,10 @@ export function Home() {
       description,
     };
 
-    setItems((prevState) => [...prevState, newItem]);
+    await add(newItem);
+
+    fetchItems();
+    setDescription("");
   }
 
   useEffect(() => {
