@@ -17,15 +17,23 @@ import { Item } from "@/components/Item";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Filter } from "@/components/Filter";
+import { AlertDialog } from "@/components/AlertDialog";
 
 const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
+
+type ItemDialogProps = {
+  itemId: string;
+  itemDescription: string;
+};
 
 export function Home() {
   const [filter, setFilter] = useState(FilterStatus.PENDING);
   const [description, setDescription] = useState("");
   const [items, setItems] = useState<ItemStorage[]>([]);
+  const [openDialog, setOpenDialog] = useState<boolean>(true);
+  const [dialogItem, setDialogItem] = useState<ItemDialogProps | null>(null);
 
-  const { getByStatus, add } = itemsStorage;
+  const { getByStatus, add, remove } = itemsStorage;
 
   async function itemsByStatus() {
     try {
@@ -55,6 +63,21 @@ export function Home() {
     setFilter(FilterStatus.PENDING);
 
     Alert.alert("Adicionado", `Adicionado ${description}`);
+  }
+
+  async function handleRemoveItem(itemId: string) {
+    try {
+      await remove(itemId);
+      itemsByStatus();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Remover Item", "Não foi possível remover o item.");
+    }
+  }
+
+  function handleRemoveAlert(itemId: string, itemDescription: string) {
+    setDialogItem({ itemId, itemDescription });
+    setOpenDialog(true);
   }
 
   useEffect(() => {
@@ -100,7 +123,7 @@ export function Home() {
           renderItem={({ item }) => (
             <Item
               data={item}
-              onRemove={() => console.log("Removing item...")}
+              onRemove={() => handleRemoveAlert(item.id, item.description)}
               onToggleStatus={() => console.log("Toggling item status...")}
             />
           )}
@@ -112,6 +135,40 @@ export function Home() {
           )}
         />
       </View>
+
+      {dialogItem ? (
+        <AlertDialog
+          visible={openDialog}
+          title="Remover Item"
+          message={
+            <Text
+              style={{
+                marginTop: 48,
+                marginBottom: 24,
+                fontSize: 16,
+                color: "#1E1E1E",
+                textAlign: "center",
+                lineHeight: 24,
+              }}
+            >
+              Deseja realmente remover o item{"\n"}
+              <Text style={{ fontWeight: 700 }}>
+                {dialogItem.itemDescription}
+              </Text>
+              ?
+            </Text>
+          }
+          cancelText="Cancelar"
+          onCancel={() => setOpenDialog(false)}
+          confirmText="Sim, remover"
+          onConfirm={() => {
+            if (dialogItem) {
+              handleRemoveItem(dialogItem.itemId);
+            }
+            setOpenDialog(false);
+          }}
+        />
+      ) : null}
     </View>
   );
 }
