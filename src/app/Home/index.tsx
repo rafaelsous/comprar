@@ -2,14 +2,15 @@ import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
 import { styles } from "./styles";
 
+import { ITEMS } from "@/utils/data";
+import { FilterStatus } from "@/types/FilterStatus";
+
+import { Item } from "@/components/Item";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Filter } from "@/components/Filter";
-import { Item, ItemData } from "@/components/Item";
-import { FilterStatus } from "@/types/FilterStatus";
 
 const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
-const ITEMS = Array.from({ length: 100 }).map((_, index) => String(index));
 
 export function Home() {
   function handleRemoveItem() {
@@ -42,18 +43,19 @@ export function Home() {
 
         <FlatList
           data={ITEMS}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Item
-              data={
-                {
-                  status: FilterStatus.DONE,
-                  description: "3 Tomates",
-                } as ItemData
-              }
+              data={item}
               onRemove={handleRemoveItem}
               onToggleStatus={handleToggleItemStatus}
             />
+          )}
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={() => (
+            <Text style={styles.empty}>Nenhum item aqui</Text>
           )}
         />
       </View>

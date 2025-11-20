@@ -6,7 +6,7 @@ import { styles } from "./styles";
 import { StatusIcon } from "../StatusIcon";
 import { FilterStatus } from "@/types/FilterStatus";
 
-export type ItemData = {
+type ItemData = {
   status: FilterStatus;
   description: string;
 };
