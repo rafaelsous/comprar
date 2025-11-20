@@ -1,4 +1,4 @@
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import { styles } from "./styles";
 
@@ -39,13 +39,21 @@ export function Home() {
           </TouchableOpacity>
         </View>
 
-        <Item
-          data={
-            { status: FilterStatus.DONE, description: "3 Tomates" } as ItemData
-          }
-          onRemove={handleRemoveItem}
-          onToggleStatus={handleToggleItemStatus}
-        />
+        <ScrollView>
+          {Array.from({ length: 100 }).map((_, index) => (
+            <Item
+              key={index}
+              data={
+                {
+                  status: FilterStatus.DONE,
+                  description: "3 Tomates",
+                } as ItemData
+              }
+              onRemove={handleRemoveItem}
+              onToggleStatus={handleToggleItemStatus}
+            />
+          ))}
+        </ScrollView>
       </View>
     </View>
   );
