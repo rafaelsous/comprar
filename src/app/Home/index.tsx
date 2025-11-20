@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -11,6 +11,7 @@ import {
 import { styles } from "./styles";
 
 import { FilterStatus } from "@/types/FilterStatus";
+import { itemsStorage, ItemStorage } from "@/storage/itemsStorage";
 
 import { Item } from "@/components/Item";
 import { Input } from "@/components/Input";
@@ -22,7 +23,21 @@ const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
 export function Home() {
   const [filter, setFilter] = useState(FilterStatus.PENDING);
   const [description, setDescription] = useState("");
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<ItemStorage[]>([]);
+
+  const { get } = itemsStorage;
+
+  async function fetchItems() {
+    try {
+      console.log("Loading items...");
+
+      const data = await get();
+      setItems(data);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Erro", "Não foi possível filter os items.");
+    }
+  }
 
   function handleAddItem() {
     if (!description.trim()) {
@@ -37,6 +52,10 @@ export function Home() {
 
     setItems((prevState) => [...prevState, newItem]);
   }
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
   return (
     <View style={styles.container}>
