@@ -6,10 +6,19 @@ import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Filter } from "@/components/Filter";
 import { FilterStatus } from "@/types/FilterStatus";
+import { Item, ItemData } from "@/components/Item";
 
 const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
 
 export function Home() {
+  function handleRemoveItem() {
+    console.log("Removing item...");
+  }
+
+  function handleToggleItemStatus() {
+    console.log("Toggling item status...");
+  }
+
   return (
     <View style={styles.container}>
       <Image style={styles.logo} source={require("@/assets/logo.png")} />
@@ -29,6 +38,14 @@ export function Home() {
             <Text style={styles.clearText}>Limpar</Text>
           </TouchableOpacity>
         </View>
+
+        <Item
+          data={
+            { status: FilterStatus.DONE, description: "3 Tomates" } as ItemData
+          }
+          onRemove={handleRemoveItem}
+          onToggleStatus={handleToggleItemStatus}
+        />
       </View>
     </View>
   );
